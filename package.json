@@ -1,0 +1,47 @@
+{
+  "name": "vyapar-m2d-whatsapp-agent",
+  "version": "1.0.0",
+  "description": "Vyapar M2D (Mobile to Desktop) AI WhatsApp Agent — Convex backend + React dashboard",
+  "scripts": {
+    "dev": "concurrently -k -n convex,web -c blue,magenta \"npm:dev:backend\" \"npm:dev:web\"",
+    "dev:backend": "convex dev",
+    "dev:web": "vite",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b && tsc -p convex --noEmit",
+    "test": "vitest run",
+    "deploy:functions": "convex deploy",
+    "demo:load": "convex run demo:load",
+    "demo:clear": "convex run demo:clear"
+  },
+  "type": "module",
+  "dependencies": {
+    "@auth/core": "^0.41.3",
+    "@convex-dev/auth": "^0.0.95",
+    "@tanstack/react-query": "^5.104.0",
+    "convex": "^1.46.0",
+    "convex-helpers": "^0.1.124",
+    "libphonenumber-js": "^1.13.14",
+    "lucide-react": "^1.48.0",
+    "papaparse": "^5.7.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router": "^8.4.0"
+  },
+  "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.3",
+    "@types/papaparse": "^5.5.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "concurrently": "^10.0.5",
+    "convex-test": "^0.0.60",
+    "jose": "^6.2.12",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  },
+  "private": true
+}

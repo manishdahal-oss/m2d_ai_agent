@@ -1,0 +1,22 @@
+{
+  /* Type-checks Convex functions (used by `npx convex dev`). */
+  "compilerOptions": {
+    "allowJs": true,
+    "strict": true,
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
+    "target": "ESNext",
+    "lib": ["ES2023", "dom"],
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "isolatedModules": true,
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "types": ["node", "vite/client"]
+  },
+  "include": ["./**/*"],
+  "exclude": ["./_generated"]
+}
