@@ -89,22 +89,28 @@ export const campaignDeletePreview = authedQuery({
   handler: async (ctx, { campaignId }) => {
     const c = await ctx.db.get(campaignId);
     if (!c) return null;
+    // One indexed read; "messaged" comes from counters kept on each conversation, so this stays
+    // within Convex's per-request read limit even for campaigns with thousands of contacts.
     const convs = await ctx.db.query('conversations').withIndex('by_campaign_last_message', (i) => i.eq('campaignId', campaignId)).collect();
-    let messaged = 0;
-    let deletableContacts = 0;
-    for (const conv of convs) {
-      const msgs = await ctx.db.query('messages').withIndex('by_conversation', (i) => i.eq('conversationId', conv._id)).collect();
-      if (msgs.some((m) => m.direction === 'INBOUND' || (m.direction === 'OUTBOUND' && DELIVERED.has(m.status)))) messaged++;
-      const customer = await ctx.db.get(conv.customerId);
-      if (customer && !(await keepReason(ctx, customer))) {
-        const others = await ctx.db.query('conversations').withIndex('by_customer', (i) => i.eq('customerId', customer._id)).collect();
-        if (others.every((o) => o.campaignId === campaignId)) deletableContacts++;
+    const messaged = convs.filter((x) => x.contactedAt !== undefined || x.outboundSent > 0 || x.inboundCount > 0).length;
+    // Exact count of deletable contacts needs ~3 reads per contact: only for small campaigns.
+    let deletableContacts: number | null = null;
+    if (messaged === 0 && convs.length <= PREVIEW_EXACT_LIMIT) {
+      deletableContacts = 0;
+      for (const conv of convs) {
+        const customer = await ctx.db.get(conv.customerId);
+        if (customer && !(await keepReason(ctx, customer))) {
+          const others = await ctx.db.query('conversations').withIndex('by_customer', (i) => i.eq('customerId', customer._id)).collect();
+          if (others.every((o) => o.campaignId === campaignId)) deletableContacts++;
+        }
       }
     }
     const blocked = c.status === 'RUNNING' ? 'Pause the campaign first.' : messaged > 0 ? `${messaged} customers in this campaign were already messaged — their history must be kept.` : null;
     return { contacts: convs.length, messaged, deletableContacts, blocked };
   },
 });
+
+const PREVIEW_EXACT_LIMIT = 800;
 
 export const deleteCampaign = authedMutation({
   args: { campaignId: v.id('campaigns'), deleteContacts: v.boolean(), confirm: v.literal(true) },

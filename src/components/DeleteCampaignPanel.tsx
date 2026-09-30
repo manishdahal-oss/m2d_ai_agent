@@ -45,8 +45,11 @@ export function DeleteCampaignPanel({ campaignId, name }: { campaignId: Id<'camp
             <label className="flex items-start gap-2">
               <input type="checkbox" className="mt-0.5" checked={withContacts} onChange={(e) => setWithContacts(e.target.checked)} />
               <span>
-                Also delete these contacts ({fmtNumber(preview.deletableContacts)} can be deleted
-                {preview.contacts > preview.deletableContacts ? ` — ${fmtNumber(preview.contacts - preview.deletableContacts)} are kept: opted out, or in another campaign` : ''})
+                Also delete these contacts (
+                {preview.deletableContacts === null
+                  ? 'contacts who opted out or are in another campaign are kept'
+                  : `${fmtNumber(preview.deletableContacts)} can be deleted${preview.contacts > preview.deletableContacts ? ` — ${fmtNumber(preview.contacts - preview.deletableContacts)} are kept: opted out, or in another campaign` : ''}`}
+                )
               </span>
             </label>
             <label className="flex items-start gap-2 text-ink-2">
